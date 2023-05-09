@@ -37,11 +37,11 @@ public class GameSoldierRepository : Repository<GameSoldier>
                 var type = kvp.Value.ToString().Split(':');
                 if (type[1] == "desc")
                 {
-                    query = query.OrderByDescending(gs => gs.GetType().GetProperty(type[0]).GetValue(gs, null));
+                    query = query.OderByDynamic(type[0]);
                 }
                 else
                 {
-                    query = query.OrderBy(gs => gs.GetType().GetProperty(type[0]).GetValue(gs, null));
+                    query = query.OderByDynamic(type[0], false);
                 }
             }
             else if (kvp.Key != "limit" && kvp.Key != "marker")

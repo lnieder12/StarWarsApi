@@ -16,6 +16,20 @@ public static class QueryableExtensions
         return query.Where(predicate);
     }
 
+    public static IQueryable<T> OderByDynamic<T>(this IQueryable<T> query, string fieldName, bool ascending = true)
+    {
+        var param = Expression.Parameter(typeof(T), "x");
+        var prop = GetProperty(param, fieldName);
+        var lambda = Expression.Lambda(prop, param);
+        var methodName = ascending ? "OrderBy" : "OrderByDescending";
+        var method = typeof(Queryable).GetMethods()
+            .First(method => method.Name == methodName && method.IsGenericMethodDefinition &&
+                             method.GetGenericArguments().Length == 2 &&
+                             method.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(T), prop.Type);
+        return (IQueryable<T>)method.Invoke(null, new object[] { query, lambda });
+    }
+
     private static MemberExpression GetProperty(ParameterExpression param, string fieldName)
     {
         Expression prop = param;
