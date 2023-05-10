@@ -357,6 +357,12 @@ public class ServiceGame : Service<Game>
     }
 
 
+    public int GetRoundFilteredCount(int id, Dictionary<string, StringValues> queryParams)
+    {
+        var rndRepo = new RoundRepository(_context);
+        return rndRepo.GetCountOnQuery(id, queryParams);
+    }
+
     public int RebelScore(int id)
     {
         var score = 0;
