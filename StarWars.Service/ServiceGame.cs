@@ -342,6 +342,14 @@ public class ServiceGame : Service<Game>
         return scores;
     }
 
+    public List<Round> GetRoundsPage(int id, Dictionary<string, StringValues> queryParams)
+    {
+        var rndRepo = new RoundRepository(_context);
+        var rounds = rndRepo.GetPage(id, queryParams);
+
+        return rounds;
+    }
+
     public int GetScoreFilteredCount(int id, Dictionary<string, StringValues> queryParams)
     {
         var gsRepo = new GameSoldierRepository(_context);
