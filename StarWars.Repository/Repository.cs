@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using StarWars.Model;
 
 namespace StarWars.Controllers;

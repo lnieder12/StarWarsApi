@@ -1,11 +1,12 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Primitives;
 using StarWars.Model;
 
 namespace StarWars.Controllers;
 
-public class RoundRepository : Repository<Round>
+public class RoundRepository : FilterPageRepository<Round>
 {
     public RoundRepository(StarWarsDbContext ctx) : base(ctx)
     {
@@ -39,6 +40,17 @@ public class RoundRepository : Repository<Round>
             
             .Take(nbRow)
             .ToList();
+    }
+
+    public override IQueryable<Round> GetQueryFilteredSorted(int gameId, Dictionary<string, StringValues> queryParams)
+    {
+        var rndDb = ctx.Set<Round>();
+        var query = rndDb
+            .Where(rnd => rnd.GameId == gameId);
+
+        query = query.AddFiltersSorted(queryParams);
+
+        return query;
     }
 
 }

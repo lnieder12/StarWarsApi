@@ -19,4 +19,6 @@ public class Round
 
     public int HpLeft { get; set; }
 
+    public int GameId { get; set; }
+
 }
