@@ -1,19 +1,103 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.Extensions.Primitives;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Newtonsoft.Json.Linq;
 
 namespace StarWars.Controllers;
 
 public static class QueryableExtensions
 {
-    public static IQueryable<T> FilterDynamic<T>(this IQueryable<T> query, string fieldName, string values)
+
+    public static IQueryable<T> AddFiltersSorted<T>(this IQueryable<T> query, Dictionary<string, StringValues> queryParams)
+    {
+        foreach (var kvp in queryParams)
+        {
+            if (kvp.Key.Equals("sort"))
+            {
+                var type = kvp.Value.ToString().Split(':');
+                if (type[1] == "desc")
+                {
+                    query = query.OderByDynamic(type[0]);
+                }
+                else
+                {
+                    query = query.OderByDynamic(type[0], false);
+                }
+            }
+            else if (!(kvp.Key.Equals("limit") || kvp.Key.Equals("skip")))
+            {
+                if (kvp.Value.ToString().Contains(":"))
+                {
+                    query = query.OperationFilters(kvp.Key, kvp.Value);
+                }
+                else
+                {
+                    query = query.FilterDynamic(kvp.Key, kvp.Value, "");
+                }
+            }
+            
+        }
+
+        return query;
+
+    }
+
+    public static IQueryable<T> OperationFilters<T>(this IQueryable<T> query, string field, string values)
+    {
+        var operations = values.Split(',');
+        foreach (var op in operations)
+        {
+            var split = op.Split(':');
+            query = query.FilterDynamic(field, split[1], split[0]);
+        }
+
+        return query;
+    }
+
+    public static IQueryable<T> LessThanExpression<T>(this IQueryable<T> query, string field, string value)
     {
         var param = Expression.Parameter(typeof(T), "x");
-        var prop = GetProperty(param, fieldName);
-        var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-        var body = Expression.Call(prop, method,
-            Expression.Constant(values, typeof(string)));
-        var predicate = Expression.Lambda<Func<T, bool>>(body, param);
-
+        var prop = GetProperty(param, field);
+        var method = Expression.LessThan(prop, Expression.Constant(int.Parse(value)));
+        var predicate = Expression.Lambda<Func<T, bool>>(method, param);
         return query.Where(predicate);
+    }
+
+    public static IQueryable<T> FilterDynamic<T>(this IQueryable<T> query, string fieldName, string values, string op)
+    {
+        
+        var param = Expression.Parameter(typeof(T), "x");
+        var prop = GetProperty(param, fieldName);
+
+        var body = CreateBody(prop, values, op);
+        var predicate = Expression.Lambda<Func<T, bool>>(body, param);
+        
+        return query.Where(predicate);
+    }
+
+    public static Expression CreateBody(MemberExpression prop, string value, string op)
+    {
+        switch (op)
+        {
+            case "lt":
+                return Expression.LessThan(prop, Expression.Constant(int.Parse(value)));
+            case "lte":
+                return Expression.LessThanOrEqual(prop, Expression.Constant(int.Parse(value)));
+            case "gt":
+                return Expression.GreaterThan(prop, Expression.Constant(int.Parse(value)));
+            case "gte":
+                return Expression.GreaterThanOrEqual(prop, Expression.Constant(int.Parse(value)));
+            default:
+                var propertyInfo = (PropertyInfo)prop.Member;
+                var type = propertyInfo.PropertyType;
+                var method = type.GetMethod("Contains", new[] { type });
+                var body = Expression.Call(prop, method,
+                    Expression.Constant(value, type));
+                return body;
+
+        }
     }
 
     public static IQueryable<T> OderByDynamic<T>(this IQueryable<T> query, string fieldName, bool ascending = true)

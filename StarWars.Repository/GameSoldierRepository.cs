@@ -30,6 +30,9 @@ public class GameSoldierRepository : Repository<GameSoldier>
             .Include(gs => gs.Soldier)
             .Where(gs => gs.GameId == gameId);
 
+        query = query.AddFiltersSorted(queryParams);
+
+        /*
         foreach (var kvp in queryParams)
         {
             if (kvp.Key == "sort")
@@ -48,7 +51,7 @@ public class GameSoldierRepository : Repository<GameSoldier>
             {
                 query = query.FilterDynamic(kvp.Key, kvp.Value.ToString());
             }
-        }
+        }*/
 
         return query;
     }
