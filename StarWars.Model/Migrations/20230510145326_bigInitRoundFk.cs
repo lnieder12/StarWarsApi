@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StarWars.Model.Migrations
 {
     /// <inheritdoc />
-    public partial class scoreInGameSoldierV2 : Migration
+    public partial class bigInitRoundFk : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,13 +34,11 @@ namespace StarWars.Model.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     MaxHealth = table.Column<int>(type: "int", nullable: false),
                     Attack = table.Column<int>(type: "int", nullable: false),
                     SoldierType = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Empire_Name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -57,7 +55,9 @@ namespace StarWars.Model.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     GameId = table.Column<int>(type: "int", nullable: false),
                     SoldierId = table.Column<int>(type: "int", nullable: false),
-                    Health = table.Column<int>(type: "int", nullable: false)
+                    Health = table.Column<int>(type: "int", nullable: false),
+                    Damage = table.Column<int>(type: "int", nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: false, computedColumnSql: "(Health + Damage) * 10", stored: true)
                 },
                 constraints: table =>
                 {
@@ -85,6 +85,7 @@ namespace StarWars.Model.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     AttackerId = table.Column<int>(type: "int", nullable: false),
                     DefenderId = table.Column<int>(type: "int", nullable: false),
+                    Damage = table.Column<int>(type: "int", nullable: false),
                     IsDead = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     HpLeft = table.Column<int>(type: "int", nullable: false),
                     GameId = table.Column<int>(type: "int", nullable: true)

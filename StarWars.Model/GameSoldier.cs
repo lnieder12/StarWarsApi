@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-namespace StarWars.Model;
+﻿namespace StarWars.Model;
 
 public class GameSoldier
 {
@@ -15,6 +13,5 @@ public class GameSoldier
     public int Health { get; set; }
 
     public int Damage { get; set; }
-
     public int Score { get; private set; }
 }

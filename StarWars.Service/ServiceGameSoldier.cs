@@ -12,15 +12,6 @@ public class ServiceGameSoldier : Service<GameSoldier>
         this.gsRepo = new GameSoldierRepository(context);
     }
 
-    public void SetHealth(int hp, int gameId, int soldierId)
-    {
-    }
-
-    public int SoldierHealth(int gameId, int soldierId)
-    {
-        return Get(gameId, soldierId).Health;
-    }
-
     public GameSoldier Get(int gameId, int soldierId)
     {
         return this.gsRepo.Get(gameId, soldierId);

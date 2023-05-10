@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using Newtonsoft.Json.Linq;
 
 namespace StarWars.Controllers;
 

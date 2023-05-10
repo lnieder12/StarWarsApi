@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using StarWars.Model;
 
@@ -24,7 +25,7 @@ public class ServiceRound : Service<Round>
         return roundRepo.GetAll();
     }
 
-    public Round AddRound(int idAtt, int idDef)
+    public Round AddRound(int idAtt, int idDef, Game game)
     {
         var svSoldier = new Service<Soldier>(context);
 
@@ -41,13 +42,15 @@ public class ServiceRound : Service<Round>
         {
             Attacker = soldAtt,
             Defender = soldDef,
+            Damage = soldAtt.Attack,
+            Game = game,
+            GameId = game.Id,
         };
 
         
 
         Add(round);
 
-        context.SaveChanges();
 
         return round;
     }
@@ -60,6 +63,16 @@ public class ServiceRound : Service<Round>
     public List<Round> GetPage(int lastId, int pageSize)
     {
         return roundRepo.GetPage(lastId, pageSize);
+    }
+
+    public void PatchRoundsDamage(Soldier attacker)
+    {
+        foreach (var rnd in roundRepo.All())
+        {
+            var patch = new JsonPatchDocument<Round>();
+            patch.Replace(rnd => rnd.Damage, attacker.Attack);
+            Patch(rnd.Id, patch);
+        }
     }
 
 }

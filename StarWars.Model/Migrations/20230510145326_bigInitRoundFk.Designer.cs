@@ -11,8 +11,8 @@ using StarWars.Model;
 namespace StarWars.Model.Migrations
 {
     [DbContext(typeof(StarWarsDbContext))]
-    [Migration("20230504144351_scoreInGS")]
-    partial class scoreInGS
+    [Migration("20230510145326_bigInitRoundFk")]
+    partial class bigInitRoundFk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,11 @@ namespace StarWars.Model.Migrations
                     b.Property<int>("Health")
                         .HasColumnType("int");
 
+                    b.Property<int>("Score")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("int")
+                        .HasComputedColumnSql("(Health + Damage) * 10", true);
+
                     b.Property<int>("SoldierId")
                         .HasColumnType("int");
 
@@ -70,6 +75,9 @@ namespace StarWars.Model.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("AttackerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Damage")
                         .HasColumnType("int");
 
                     b.Property<int>("DefenderId")
@@ -107,6 +115,10 @@ namespace StarWars.Model.Migrations
                     b.Property<int>("MaxHealth")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("SoldierType")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -124,26 +136,12 @@ namespace StarWars.Model.Migrations
                 {
                     b.HasBaseType("StarWars.Model.Soldier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.ToTable("Soldiers", t =>
-                        {
-                            t.Property("Name")
-                                .HasColumnName("Empire_Name");
-                        });
-
                     b.HasDiscriminator().HasValue("Empire");
                 });
 
             modelBuilder.Entity("StarWars.Model.Rebel", b =>
                 {
                     b.HasBaseType("StarWars.Model.Soldier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.HasDiscriminator().HasValue("Rebel");
                 });

@@ -27,7 +27,7 @@ public class Service<T> where T : class
         return Repo.Get(id);
     }
 
-    public T Patch(int id, JsonPatchDocument<T> patch)
+    public virtual T Patch(int id, JsonPatchDocument<T> patch)
     {
         return Repo.Patch(Get(id), patch);
     }

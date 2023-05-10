@@ -38,6 +38,7 @@ namespace StarWars.Model
                 .Property(gs => gs.Score)
                 .HasComputedColumnSql("(Health + Damage) * 10", stored: true);
 
+
             base.OnModelCreating(modelBuilder);
         }
     }

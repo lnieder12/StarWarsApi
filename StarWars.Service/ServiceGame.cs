@@ -300,7 +300,7 @@ public class ServiceGame : Service<Game>
         if (defGs.Health < 0)
             defGs.Health = 0;
 
-        var round = srv.AddRound(att.Id, defender.Id);
+        var round = srv.AddRound(att.Id, defender.Id, game);
         round.HpLeft = defGs.Health;
         round.IsDead = defGs.Health <= 0;
 

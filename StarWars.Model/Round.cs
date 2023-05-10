@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StarWars.Model;
 
@@ -12,13 +13,13 @@ public class Round
 
     [AllowNull]
     public Soldier Defender { get; set; }
-
-    public int Damage => Attacker != null ? Attacker.Attack : 0;
+    public int Damage { get; set; }
 
     public bool IsDead { get; set; }
 
     public int HpLeft { get; set; }
 
-    public int GameId { get; set; }
+    public Game Game { get; set; }
 
+    public int GameId { get; set; }
 }

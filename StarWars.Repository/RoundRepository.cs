@@ -44,9 +44,10 @@ public class RoundRepository : FilterPageRepository<Round>
 
     public override IQueryable<Round> GetQueryFilteredSorted(int gameId, Dictionary<string, StringValues> queryParams)
     {
-        var rndDb = ctx.Set<Round>();
-        var query = rndDb
-            .Where(rnd => rnd.GameId == gameId);
+
+        var query = All()
+            .Where(rnd => rnd.GameId == gameId)
+            ;
 
         query = query.AddFiltersSorted(queryParams);
 
