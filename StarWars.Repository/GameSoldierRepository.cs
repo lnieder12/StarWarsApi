@@ -44,7 +44,7 @@ public class GameSoldierRepository : Repository<GameSoldier>
                     query = query.OderByDynamic(type[0], false);
                 }
             }
-            else if (kvp.Key != "limit" && kvp.Key != "marker")
+            else if (kvp.Key != "limit" && kvp.Key != "skip")
             {
                 query = query.FilterDynamic(kvp.Key, kvp.Value.ToString());
             }
@@ -68,7 +68,7 @@ public class GameSoldierRepository : Repository<GameSoldier>
             query = kvp.Key switch
             {
                 "limit" => query.Take(int.Parse(kvp.Value)),
-                "marker" => query.Where(gs => gs.Id > int.Parse(kvp.Value)),
+                "skip" => query.Skip(int.Parse(kvp.Value)),
                 _ => query
             };
         }
