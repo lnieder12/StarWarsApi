@@ -34,6 +34,9 @@ namespace StarWars.Model
             modelBuilder.Entity<Game>()
                 .HasMany(g => g.Soldiers);
 
+            modelBuilder.Entity<GameSoldier>()
+                .Property(gs => gs.Score)
+                .HasComputedColumnSql("(Health + Damage) * 10", stored: true);
 
             base.OnModelCreating(modelBuilder);
         }

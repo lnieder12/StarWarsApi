@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StarWars.Model;
 
@@ -10,9 +11,11 @@ using StarWars.Model;
 namespace StarWars.Model.Migrations
 {
     [DbContext(typeof(StarWarsDbContext))]
-    partial class StarWarsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230510071032_scoreInDbV2")]
+    partial class scoreInDbV2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,8 +53,7 @@ namespace StarWars.Model.Migrations
 
                     b.Property<int>("Score")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("int")
-                        .HasComputedColumnSql("(Health + Damage) * 10", true);
+                        .HasColumnType("int");
 
                     b.Property<int>("SoldierId")
                         .HasColumnType("int");

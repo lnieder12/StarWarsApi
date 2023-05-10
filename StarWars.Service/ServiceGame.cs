@@ -315,18 +315,13 @@ public class ServiceGame : Service<Game>
         return GetRounds(id).FindAll(r => r.Attacker.Id == soldierId);
     }
 
-    public int SoldierScore(int id, GameSoldier gs)
-    {
-        return (gs.Health + gs.Damage) * 10;
-    }
-
     public SoldierScore GetSoldierScore(int id, GameSoldier gs)
     {
         var score = new SoldierScore
         {
             GsId = gs.Id,
             Soldier = gs.Soldier,
-            Score = this.SoldierScore(id, gs)
+            Score = gs.Score,
         };
         return score;
     }
@@ -357,14 +352,14 @@ public class ServiceGame : Service<Game>
     public int RebelScore(int id)
     {
         var score = 0;
-        GetGSRebel(id).ForEach(rebel => score += SoldierScore(id, rebel));
+        GetGSRebel(id).ForEach(rebel => score += rebel.Score);
         return score;
     }
 
     public int EmpireScore(int id)
     {
         var score = 0;
-        GetGSEmpire(id).ForEach(empire => score += SoldierScore(id, empire));
+        GetGSEmpire(id).ForEach(empire => score += empire.Score);
         return score;
     }
 

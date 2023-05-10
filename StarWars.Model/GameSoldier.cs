@@ -16,4 +16,5 @@ public class GameSoldier
 
     public int Damage { get; set; }
 
+    public int Score { get; private set; }
 }
