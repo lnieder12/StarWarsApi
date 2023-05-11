@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace StarWars.Model;
+﻿namespace StarWars.Model;
 
 public class Rebel : Soldier
 {

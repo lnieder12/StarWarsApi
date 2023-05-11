@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using StarWars.Model;
+﻿using StarWars.Model;
 
 namespace StarWars.Controllers;
 
