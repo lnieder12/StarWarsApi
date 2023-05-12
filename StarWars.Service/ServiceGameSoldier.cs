@@ -1,4 +1,5 @@
-﻿using StarWars.Model;
+﻿using Microsoft.Extensions.Primitives;
+using StarWars.Model;
 using StarWars.Repository;
 
 namespace StarWars.Service;
@@ -10,13 +11,17 @@ public class ServiceGameSoldier : GamePageService<GameSoldier>
 
     public ServiceGameSoldier(StarWarsDbContext context) : base(context)
     {
-        this._gsRepo = new GameSoldierRepository(context);
+        _gsRepo = new GameSoldierRepository(context);
     }
 
-    public GameSoldier Get(int gameId, int soldierId)
+    public override List<GameSoldier> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
     {
-        return this._gsRepo.Get(gameId, soldierId);
+        return _gsRepo.GetPage(gameId, queryParams);
     }
 
+    public override int GetCountOnQuery(int gameId, Dictionary<string, StringValues> queryParams)
+    {
+        return _gsRepo.GetPageCount(gameId, queryParams);
+    }
 
 }

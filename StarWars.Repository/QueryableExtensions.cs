@@ -1,6 +1,10 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Primitives;
+using StarWars.Model;
 
 namespace StarWars.Repository;
 
@@ -110,6 +114,19 @@ public static class QueryableExtensions
             prop = Expression.PropertyOrField(prop, s);
         }
         return (MemberExpression)prop;
+    }
+
+    public static IQueryable<T> AddIncludes<T>(this IQueryable<T> query, ICollection<string> properties) where T : class
+    {
+        foreach (var prop in properties)
+        {
+            var splits = prop.Split('.');
+            var includeQuery = query.Include<T>(splits[0]);
+            for (var i = 1; i < splits.Length; i++)
+            {
+                includeQuery = includeQuery.
+            }
+        }
     }
 
 }

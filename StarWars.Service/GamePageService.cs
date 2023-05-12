@@ -12,12 +12,12 @@ public class GamePageService<T> : Service<T> where T : class
         PageRepo = new GamePageRepository<T>(context);
     }
 
-    public List<T> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
+    public virtual List<T> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
     {
         return PageRepo.GetPage(gameId, queryParams);
     }
 
-    public int GetCountOnQuery(int gameId, Dictionary<string, StringValues> queryParams)
+    public virtual int GetCountOnQuery(int gameId, Dictionary<string, StringValues> queryParams)
     {
         return PageRepo.GetPageCount(gameId, queryParams);
     }

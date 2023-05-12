@@ -13,8 +13,7 @@ public class RoundRepository : GamePageRepository<Round>
 
     public Round GetInclude(int id)
     {
-        return Ctx.Set<Round>().Include(r => r.Attacker)
-            .Include(r => r.Defender)
+        return All()
             .FirstOrDefault(r => r.Id == id);
     }
 
@@ -31,7 +30,8 @@ public class RoundRepository : GamePageRepository<Round>
 
     public IIncludableQueryable<Round, Soldier> All()
     {
-        return Ctx.Rounds.Include(r => r.Attacker).Include(r => r.Defender);
+        return Ctx.Rounds.Include(r => r.Attacker)
+            .Include(r => r.Defender);
     }
  
     public List<Round> GetPage(int lastId, int nbRow)

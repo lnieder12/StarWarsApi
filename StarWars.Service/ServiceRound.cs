@@ -64,17 +64,15 @@ public class ServiceRound : GamePageService<Round>
         return _roundRepo.GetInclude(id);
     }
 
-    public List<Round> GetPage(int lastId, int pageSize)
-    {
-        return _roundRepo.GetPage(lastId, pageSize);
-    }
-
-    public new List<Round> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
+    public override List<Round> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
     {
         return _roundRepo.GetPage(gameId, queryParams);
     }
 
-    
+    public override int GetCountOnQuery(int gameId, Dictionary<string, StringValues> queryParams)
+    {
+        return _roundRepo.GetPageCount(gameId, queryParams);
+    }
 
     public void PatchRoundsDamage(Soldier attacker)
     {
