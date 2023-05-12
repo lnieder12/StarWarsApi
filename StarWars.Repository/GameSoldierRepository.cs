@@ -4,7 +4,7 @@ using StarWars.Model;
 
 namespace StarWars.Repository;
 
-public class GameSoldierRepository : FilterPageRepository<GameSoldier>
+public class GameSoldierRepository : GamePageRepository<GameSoldier>
 {
     public GameSoldierRepository(StarWarsDbContext ctx) : base(ctx)
     {

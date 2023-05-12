@@ -3,7 +3,7 @@ using StarWars.Repository;
 
 namespace StarWars.Service;
 
-public class ServiceGameSoldier : Service<GameSoldier>
+public class ServiceGameSoldier : GamePageService<GameSoldier>
 {
 
     private readonly GameSoldierRepository _gsRepo;

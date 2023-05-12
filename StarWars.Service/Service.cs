@@ -10,7 +10,7 @@ public class Service<T> where T : class
 
     public Service(StarWarsDbContext context)
     {
-        this.Repo = new Repository<T>(context);
+        Repo = new Repository<T>(context);
     }
 
     public virtual T Add(T obj)

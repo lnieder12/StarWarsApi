@@ -8,8 +8,6 @@ namespace StarWars.Service;
 
 public class ServiceGame : Service<Game>
 {
-    private readonly StarWarsDbContext _context;
-
     private readonly ServiceEmpire _empSrv;
 
     private readonly GameRepository _gameRepo;
@@ -24,12 +22,11 @@ public class ServiceGame : Service<Game>
 
     public ServiceGame(StarWarsDbContext context) : base(context)
     {
-        _context = context;
-        _rndSrv = new ServiceRound(context);
+        _gameRepo = new GameRepository(context);
         _sldSrv = new ServiceSoldier(context);
+        _rndSrv = new ServiceRound(context);
         _rebSrv = new ServiceRebel(context);
         _empSrv = new ServiceEmpire(context);
-        _gameRepo = new GameRepository(context);
         _gsSrv = new ServiceGameSoldier(context);
     }
 
@@ -105,8 +102,6 @@ public class ServiceGame : Service<Game>
 
         game.Soldiers.Add(gs);
 
-        _context.SaveChanges();
-
         return soldier;
     }
 
@@ -132,8 +127,6 @@ public class ServiceGame : Service<Game>
             return null;
 
         game.Rounds.Add(round);
-
-        _context.SaveChanges();
 
         return round;
     }
@@ -258,32 +251,28 @@ public class ServiceGame : Service<Game>
 
     public List<SoldierScore> GetSoldierScoresPage(int id, Dictionary<string, StringValues> queryParams)
     {
-        var gsRepo = new GameSoldierRepository(_context);
         var scores = new List<SoldierScore>();
-        gsRepo.GetPage(id, queryParams).ForEach(gs => scores.Add(GetSoldierScore(gs)));
+        _gsSrv.GetPage(id, queryParams).ForEach(gs => scores.Add(GetSoldierScore(gs)));
 
         return scores;
     }
 
     public List<Round> GetRoundsPage(int id, Dictionary<string, StringValues> queryParams)
     {
-        var rndRepo = new RoundRepository(_context);
-        var rounds = rndRepo.GetPage(id, queryParams);
+        var rounds = _rndSrv.GetPage(id, queryParams);
 
         return rounds;
     }
 
     public int GetScoresFilteredCount(int id, Dictionary<string, StringValues> queryParams)
     {
-        var gsRepo = new GameSoldierRepository(_context);
-        return gsRepo.GetCountOnQuery(id, queryParams);
+        return _gsSrv.GetCountOnQuery(id, queryParams);
     }
 
 
     public int GetRoundsFilteredCount(int id, Dictionary<string, StringValues> queryParams)
     {
-        var rndRepo = new RoundRepository(_context);
-        return rndRepo.GetCountOnQuery(id, queryParams);
+        return _rndSrv.GetCountOnQuery(id, queryParams);
     }
 
 

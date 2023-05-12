@@ -5,7 +5,7 @@ using StarWars.Model;
 
 namespace StarWars.Repository;
 
-public class RoundRepository : FilterPageRepository<Round>
+public class RoundRepository : GamePageRepository<Round>
 {
     public RoundRepository(StarWarsDbContext ctx) : base(ctx)
     {

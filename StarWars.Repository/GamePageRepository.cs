@@ -3,9 +3,9 @@ using StarWars.Model;
 
 namespace StarWars.Repository;
 
-public class FilterPageRepository<T> : Repository<T> where T : class
+public class GamePageRepository<T> : Repository<T> where T : class
 {
-    public FilterPageRepository(StarWarsDbContext ctx) : base(ctx)
+    public GamePageRepository(StarWarsDbContext ctx) : base(ctx)
     {
     }
 
@@ -18,7 +18,7 @@ public class FilterPageRepository<T> : Repository<T> where T : class
         return query;
     }
 
-    public virtual int GetCountOnQuery(int gameId, Dictionary<string, StringValues> queryParams)
+    public virtual int GetPageCount(int gameId, Dictionary<string, StringValues> queryParams)
     {
         var query = GetQueryFilteredSorted(gameId, queryParams);
 
@@ -32,8 +32,8 @@ public class FilterPageRepository<T> : Repository<T> where T : class
         {
             query = kvp.Key switch
             {
-                "limit" => query.Take(int.Parse(kvp.Value)),
-                "skip" => query.Skip(int.Parse(kvp.Value)),
+                "limit" => query.Take(int.Parse(kvp.Value!)),
+                "skip" => query.Skip(int.Parse(kvp.Value!)),
                 _ => query
             };
         }

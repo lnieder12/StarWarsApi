@@ -1,21 +1,22 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.Extensions.Primitives;
 using StarWars.Model;
 using StarWars.Repository;
 
 namespace StarWars.Service;
 
-public class ServiceRound : Service<Round>
+public class ServiceRound : GamePageService<Round>
 {
 
     private readonly RoundRepository _roundRepo;
 
 
-    private readonly ServiceSoldier _sldSrv;
+    private readonly Service<Soldier> _sldSrv;
 
     public ServiceRound(StarWarsDbContext context) : base(context)
     {
         _roundRepo = new RoundRepository(context);
-        _sldSrv = new ServiceSoldier(context);
+        _sldSrv = new Service<Soldier>(context);
     }
 
     public override List<Round> GetAll()
@@ -60,6 +61,13 @@ public class ServiceRound : Service<Round>
     {
         return _roundRepo.GetPage(lastId, pageSize);
     }
+
+    public List<Round> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
+    {
+        return _roundRepo.GetPage(gameId, queryParams);
+    }
+
+    
 
     public void PatchRoundsDamage(Soldier attacker)
     {
