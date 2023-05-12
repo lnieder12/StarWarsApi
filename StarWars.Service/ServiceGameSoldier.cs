@@ -1,6 +1,7 @@
-﻿using StarWars.Model;
+﻿using StarWars.Controllers;
+using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Service;
 
 public class ServiceGameSoldier : Service<GameSoldier>
 {

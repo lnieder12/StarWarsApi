@@ -1,95 +1,86 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using StarWars.Controllers;
 using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Service;
 
 public class ServiceGame : Service<Game>
 {
     private readonly StarWarsDbContext _context;
 
-    private GameRepository gameRepo;
+    private readonly ServiceEmpire _empSrv;
 
-    private ServiceGameSoldier gsSrv;
+    private readonly GameRepository _gameRepo;
+
+    private readonly ServiceGameSoldier _gsSrv;
+
+    private readonly ServiceRebel _rebSrv;
+
+    private readonly ServiceRound _rndSrv;
+
+    private readonly Service<Soldier> _sldSrv;
 
     public ServiceGame(StarWarsDbContext context) : base(context)
     {
         _context = context;
-        gameRepo = new GameRepository(context);
-        gsSrv = new ServiceGameSoldier(context);
+        _rndSrv = new ServiceRound(context);
+        _sldSrv = new Service<Soldier>(context);
+        _rebSrv = new ServiceRebel(context);
+        _empSrv = new ServiceEmpire(context);
+        _gameRepo = new GameRepository(context);
+        _gsSrv = new ServiceGameSoldier(context);
     }
 
     public Game CreateGame(int rebels, int empires, int nbRounds)
     {
-        var srvRebel = new ServiceRebel(_context);
-
-        var srvEmpire = new ServiceEmpire(_context);
-
-        if (srvEmpire == null || srvRebel == null) throw new ArgumentNullException(nameof(srvEmpire));
-
         Game game;
         if (nbRounds > 0)
-        {
-            game = this.Add(new Game()
+            game = Add(new Game
             {
-                MaxRound = nbRounds,
+                MaxRound = nbRounds
             });
-        }
         else
-            game = this.Add(new Game());
+            game = Add(new Game());
 
 
-        for (var i = 1; i <= rebels; i++)
-        {
-            this.AddSoldier(game.Id, srvRebel.CreateRandom(i).Id);
-        }
-        for (var y = 1; y <= empires; y++)
-        {
-            this.AddSoldier(game.Id, srvEmpire.CreateRandom(y).Id);
-        }
+        for (var i = 1; i <= rebels; i++) AddSoldier(game.Id, _rebSrv.CreateRandom(i).Id);
+        for (var y = 1; y <= empires; y++) AddSoldier(game.Id, _empSrv.CreateRandom(y).Id);
 
         return game;
     }
 
-    public Game CreateSelectedGame(List<Rebel> rebels, List<Empire> empires, int nbRounds)
+    public Game CreateSelectedGame(Rebels_Empires soldiers, int nbRounds)
     {
         Game game;
         if (nbRounds > 0)
-        {
-            game = this.Add(new Game()
+            game = Add(new Game
             {
-                MaxRound = nbRounds,
+                MaxRound = nbRounds
             });
-        }
         else
-            game = this.Add(new Game());
+            game = Add(new Game());
 
-        rebels.ForEach(reb => this.AddSoldier(game.Id, reb.Id));
-        empires.ForEach(emp => this.AddSoldier(game.Id, emp.Id));
+        soldiers.Rebels.ForEach(reb => AddSoldier(game.Id, reb.Id));
+        soldiers.Empires.ForEach(emp => AddSoldier(game.Id, emp.Id));
 
         return game;
     }
 
     public override List<Game> GetAll()
     {
-        return gameRepo.GetAll();
+        return _gameRepo.GetAll();
     }
 
     public Game GetIncludeSoldiers(int id)
     {
-        return gameRepo.GetIncludeSoldiers(id);
-    }
-    public Game GetIncludeRounds(int id)
-    {
-        return gameRepo.GetIncludeRounds(id);
+        return _gameRepo.GetIncludeSoldiers(id);
     }
 
-    public Soldier GetSoldier(int id)
+    public Game GetIncludeRounds(int id)
     {
-        var srv = new Service<Soldier>(_context);
-        
-        return srv.Get(id);
+        return _gameRepo.GetIncludeRounds(id);
     }
 
     public Soldier AddSoldier(int id, int soldierId)
@@ -97,18 +88,11 @@ public class ServiceGame : Service<Game>
         if (SoldierInGame(id, soldierId))
             return null;
 
-        var soldier = GetSoldier(soldierId);
+        var soldier = _sldSrv.Get(soldierId);
 
         var game = GetIncludeSoldiers(id);
 
-        if (game == null)
-        {
-            return null;
-        }
-
-        
-
-        var gs = new GameSoldier()
+        var gs = new GameSoldier
         {
             GameId = game.Id,
             Game = game,
@@ -117,14 +101,13 @@ public class ServiceGame : Service<Game>
             Health = soldier.MaxHealth
         };
 
-        gsSrv.Add(gs);
+        _gsSrv.Add(gs);
 
         game.Soldiers.Add(gs);
 
         _context.SaveChanges();
 
         return soldier;
-
     }
 
     public Soldier PatchSoldier(int id, int soldierId, JsonPatchDocument<Soldier> patch)
@@ -132,20 +115,16 @@ public class ServiceGame : Service<Game>
         if (!SoldierInGame(id, soldierId))
             return null;
 
-        var srv = new Service<Soldier>(_context);
+        var soldier = _sldSrv.Get(soldierId);
 
-        var soldier = srv.Get(soldierId);
-
-        var nSoldier = srv.Patch(soldier.Id, patch);
+        var nSoldier = _sldSrv.Patch(soldier.Id, patch);
 
         return nSoldier;
     }
 
     public Round AddRound(int id, int roundId)
     {
-        var srv = new ServiceRound(_context);
-
-        var round = srv.Get(roundId);
+        var round = _rndSrv.Get(roundId);
 
         var game = GetIncludeRounds(id);
 
@@ -176,27 +155,23 @@ public class ServiceGame : Service<Game>
         return game?.Soldiers?.Any(gs => gs.SoldierId == soldierId) ?? false;
     }
 
-    public List<GameSoldier> GetGS(int id)
+    public List<GameSoldier> GetGs(int id)
     {
-        return GetIncludeSoldiers(id)?.Soldiers;
+        return GetIncludeSoldiers(id)?.Soldiers!;
     }
 
-    public List<GameSoldier> GetGSRebel(int id)
+    public List<GameSoldier> GetGs<T>(int id) where T : Soldier
     {
-        return GetIncludeSoldiers(id)?.Soldiers.Where(gs => gs.Soldier.SoldierType == "Rebel").ToList();
-    }
-
-    public List<GameSoldier> GetGSEmpire(int id)
-    {
-        return GetIncludeSoldiers(id)?.Soldiers.Where(gs => gs.Soldier.SoldierType == "Empire").ToList();
+        return GetIncludeSoldiers(id)?.Soldiers
+            .Where(gs => gs.Soldier.GetType() == typeof(T) || gs.Soldier.GetType().IsSubclassOf(typeof(T))).ToList()!;
     }
 
     public List<Soldier> GetSoldiers(int id)
     {
-        return gsToSoldier(GetGS(id));
+        return GsToSoldier(GetGs(id));
     }
 
-    public List<Soldier> gsToSoldier(List<GameSoldier> gameSoldiers)
+    public List<Soldier> GsToSoldier(List<GameSoldier> gameSoldiers)
     {
         var soldiers = new List<Soldier>();
         gameSoldiers.ForEach(gs => soldiers.Add(gs.Soldier));
@@ -205,95 +180,59 @@ public class ServiceGame : Service<Game>
 
     public List<Rebel> GetRebels(int id)
     {
-        return gsToSoldier(GetGSRebel(id)).Cast<Rebel>().ToList();
+        return GsToSoldier(GetGs<Rebel>(id)).Cast<Rebel>().ToList();
     }
 
     public List<Empire> GetEmpires(int id)
     {
-        return gsToSoldier(GetGSEmpire(id)).Cast<Empire>().ToList();
+        return GsToSoldier(GetGs<Empire>(id)).Cast<Empire>().ToList();
     }
 
-    public List<GameSoldier> FilterValideSoldiers(List<GameSoldier> soldiers, int gameId)
+    private List<GameSoldier> FilterValidSoldiers(List<GameSoldier> soldiers)
     {
         return soldiers.FindAll(gs => gs.Health > 0);
     }
 
-    public Soldier GetRandomSoldier(int id)
+    public T GetRandom<T>(int id) where T : Soldier
     {
-        var soldiers = FilterValideSoldiers(GetGS(id), id);
+        var soldiers = GetValid<T>(id);
         if (soldiers.IsNullOrEmpty())
             return null;
-        Random random = new Random();
-
-        return soldiers[random.Next(soldiers.Count())].Soldier;
+        var random = new Random();
+        return (T)soldiers[random.Next(soldiers.Count)].Soldier;
     }
 
-    public Rebel GetRandomRebel(int id)
+    private List<GameSoldier> GetValid<T>(int id) where T : Soldier
     {
-        var rebels = GetValideRebels(id);
-        if (rebels.IsNullOrEmpty())
-            return null;
-        Random random = new Random();
-        return (Rebel)rebels[random.Next(rebels.Count())].Soldier;
+        return FilterValidSoldiers(GetGs<T>(id));
     }
 
-    public Empire GetRandomEmpire(int id)
+    public int NbValidSoldierWithType<T>(int id) where T : Soldier
     {
-        var empires = GetValideEmpires(id);
-        if (empires.IsNullOrEmpty())
-            return null;
-        Random random = new Random();
-        return (Empire)empires[random.Next(empires.Count())].Soldier;
-    }
-
-    public List<GameSoldier> GetValideRebels(int id)
-    {
-        return FilterValideSoldiers(GetGSRebel(id), id);
-    }
-
-    public List<GameSoldier> GetValideEmpires(int id)
-    {
-        return FilterValideSoldiers(GetGSEmpire(id), id);
-    }
-
-    public int NbValideRebels(int id)
-    {
-        return GetValideRebels(id).Count;
-    }
-
-    public int NbValideEmpires(int id)
-    {
-        return GetValideEmpires(id).Count;
+        return GetValid<T>(id).Count;
     }
 
     public Round Fight(int id)
     {
         var game = Get(id);
 
-        var att = GetRandomSoldier(id);
+        var att = GetRandom<Soldier>(id);
 
-        if(game == null || att == null || !SoldierInGame(id, att.Id))
-        {
-            return null;
-        }
+        if (game == null || att == null || !SoldierInGame(id, att.Id)) return null;
 
         var srv = new ServiceRound(_context);
 
         Soldier defender;
 
         if (att.GetType() == typeof(Empire))
-        {
-            defender = GetRandomRebel(id);
-        }
+            defender = GetRandom<Rebel>(id);
         else
-        {
-            defender = GetRandomEmpire(id);
-        }
+            defender = GetRandom<Empire>(id);
 
         if (defender == null)
             return null;
-        var defGs = gsSrv.Get(id, defender.Id);
-        var attGs = gsSrv.Get(id, att.Id);
+        var defGs = _gsSrv.Get(id, defender.Id);
+        var attGs = _gsSrv.Get(id, att.Id);
         attGs.Damage += att.Attack;
         defGs.Health -= att.Attack;
 
@@ -305,39 +244,25 @@ public class ServiceGame : Service<Game>
         round.IsDead = defGs.Health <= 0;
 
         return AddRound(id, round.Id);
-
     }
 
-    public List<Round> GetSoldierRoundsAsAttacker(int id, int soldierId)
-    {
-        if (!SoldierInGame(id, soldierId))
-            return null;
-        return GetRounds(id).FindAll(r => r.Attacker.Id == soldierId);
-    }
-
-    public SoldierScore GetSoldierScore(int id, GameSoldier gs)
+    private SoldierScore GetSoldierScore(GameSoldier gs)
     {
         var score = new SoldierScore
         {
             GsId = gs.Id,
             Soldier = gs.Soldier,
-            Score = gs.Score,
+            Score = gs.Score
         };
         return score;
     }
 
-    public List<SoldierScore> GetSoldierScores(int id)
-    {
-        var scores = new List<SoldierScore>();
-        GetGS(id).ForEach(gs => scores.Add(this.GetSoldierScore(id, gs)));
-        return scores;
-    }
 
     public List<SoldierScore> GetSoldierScoresPage(int id, Dictionary<string, StringValues> queryParams)
     {
         var gsRepo = new GameSoldierRepository(_context);
         var scores = new List<SoldierScore>();
-        gsRepo.GetPage(id, queryParams).ForEach(gs => scores.Add(GetSoldierScore(id, gs)));
+        gsRepo.GetPage(id, queryParams).ForEach(gs => scores.Add(GetSoldierScore(gs)));
 
         return scores;
     }
@@ -350,52 +275,44 @@ public class ServiceGame : Service<Game>
         return rounds;
     }
 
-    public int GetScoreFilteredCount(int id, Dictionary<string, StringValues> queryParams)
+    public int GetScoresFilteredCount(int id, Dictionary<string, StringValues> queryParams)
     {
         var gsRepo = new GameSoldierRepository(_context);
         return gsRepo.GetCountOnQuery(id, queryParams);
     }
 
 
-    public int GetRoundFilteredCount(int id, Dictionary<string, StringValues> queryParams)
+    public int GetRoundsFilteredCount(int id, Dictionary<string, StringValues> queryParams)
     {
         var rndRepo = new RoundRepository(_context);
         return rndRepo.GetCountOnQuery(id, queryParams);
     }
 
-    public int RebelScore(int id)
-    {
-        var score = 0;
-        GetGSRebel(id).ForEach(rebel => score += rebel.Score);
-        return score;
-    }
 
-    public int EmpireScore(int id)
+    public int TeamScore<T>(int id) where T : Soldier
     {
         var score = 0;
-        GetGSEmpire(id).ForEach(empire => score += empire.Score);
+        GetGs<T>(id).ForEach(sld => score += sld.Score);
         return score;
     }
 
     public List<Round> MultipleFights(int id, int nb)
     {
-
-        List<Round> rounds = new List<Round>();
+        var rounds = new List<Round>();
 
         Round round;
 
         if (nb > 0)
         {
-            int i = 0;
+            var i = 0;
 
             do
             {
                 round = Fight(id);
-                if(round != null)
+                if (round != null)
                     rounds.Add(round);
                 i++;
-            }
-            while (round != null && i < nb);
+            } while (round != null && i < nb);
         }
         else
         {
@@ -404,39 +321,34 @@ public class ServiceGame : Service<Game>
                 round = Fight(id);
                 if (round != null)
                     rounds.Add(round);
-            }       
-            while (round != null) ;
+            } while (round != null);
         }
+
         return rounds;
     }
 
     public bool EnoughSoldiers(int id)
     {
-        return NbValideRebels(id) > 0 && NbValideEmpires(id) > 0;
+        return NbValidSoldierWithType<Rebel>(id) > 0 && NbValidSoldierWithType<Empire>(id) > 0;
     }
 
     public string WinnerTeam(int id)
     {
-        var winner = "";
+        string winner;
         if (!EnoughSoldiers(id))
         {
-            if (GetValideEmpires(id).Count > 0)
-            {
-                winner = "Empires won";
-            }
-            else
-                winner = "Rebels won";
+            winner = GetValid<Empire>(id).Count > 0 ? "Empires won" : "Rebels won";
         }
         else
         {
-            var empScore = EmpireScore(id);
-            var rebScore = RebelScore(id);
+            var empScore = TeamScore<Empire>(id);
+            var rebScore = TeamScore<Rebel>(id);
             if (empScore > rebScore)
                 winner = "Empires won with " + empScore + " points";
             else
                 winner = "Rebels won with " + rebScore + " points";
         }
+
         return winner;
     }
-
 }

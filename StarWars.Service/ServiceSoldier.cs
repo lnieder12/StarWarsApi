@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Service;
 
 public class ServiceSoldier : Service<Soldier>
 {

@@ -1,6 +1,6 @@
 ﻿using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Service;
 
 public class ServiceEmpire : Service<Empire>
 {

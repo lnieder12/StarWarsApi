@@ -25,7 +25,7 @@ public static class QueryableExtensions
             }
             else if (!(kvp.Key.Equals("limit") || kvp.Key.Equals("skip")))
             {
-                if (kvp.Value.ToString().Contains(":"))
+                if (kvp.Value.ToString().Contains(':'))
                 {
                     query = query.OperationFilters(kvp.Key, kvp.Value);
                 }
@@ -51,15 +51,6 @@ public static class QueryableExtensions
         }
 
         return query;
-    }
-
-    public static IQueryable<T> LessThanExpression<T>(this IQueryable<T> query, string field, string value)
-    {
-        var param = Expression.Parameter(typeof(T), "x");
-        var prop = GetProperty(param, field);
-        var method = Expression.LessThan(prop, Expression.Constant(int.Parse(value)));
-        var predicate = Expression.Lambda<Func<T, bool>>(method, param);
-        return query.Where(predicate);
     }
 
     public static IQueryable<T> FilterDynamic<T>(this IQueryable<T> query, string fieldName, string values, string op)
