@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.Extensions.Primitives;
 
-namespace StarWars.Controllers;
+namespace StarWars.Repository;
 
 public static class QueryableExtensions
 {

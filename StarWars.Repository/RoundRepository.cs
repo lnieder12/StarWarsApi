@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Primitives;
 using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Repository;
 
 public class RoundRepository : FilterPageRepository<Round>
 {
@@ -13,7 +13,7 @@ public class RoundRepository : FilterPageRepository<Round>
 
     public Round GetInclude(int id)
     {
-        return ctx.Set<Round>().Include(r => r.Attacker)
+        return Ctx.Set<Round>().Include(r => r.Attacker)
             .Include(r => r.Defender)
             .FirstOrDefault(r => r.Id == id);
     }
@@ -25,7 +25,7 @@ public class RoundRepository : FilterPageRepository<Round>
 
     public IIncludableQueryable<Round, Soldier> All()
     {
-        return ctx.Rounds.Include(r => r.Attacker).Include(r => r.Defender);
+        return Ctx.Rounds.Include(r => r.Attacker).Include(r => r.Defender);
     }
  
 

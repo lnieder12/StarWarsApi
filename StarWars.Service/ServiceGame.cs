@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
-using StarWars.Controllers;
 using StarWars.Model;
+using StarWars.Repository;
 
 namespace StarWars.Service;
 
@@ -20,13 +20,13 @@ public class ServiceGame : Service<Game>
 
     private readonly ServiceRound _rndSrv;
 
-    private readonly Service<Soldier> _sldSrv;
+    private readonly ServiceSoldier _sldSrv;
 
     public ServiceGame(StarWarsDbContext context) : base(context)
     {
         _context = context;
         _rndSrv = new ServiceRound(context);
-        _sldSrv = new Service<Soldier>(context);
+        _sldSrv = new ServiceSoldier(context);
         _rebSrv = new ServiceRebel(context);
         _empSrv = new ServiceEmpire(context);
         _gameRepo = new GameRepository(context);
@@ -51,7 +51,7 @@ public class ServiceGame : Service<Game>
         return game;
     }
 
-    public Game CreateSelectedGame(Rebels_Empires soldiers, int nbRounds)
+    public Game CreateSelectedGame(RebelsEmpires soldiers, int nbRounds)
     {
         Game game;
         if (nbRounds > 0)
@@ -141,7 +141,7 @@ public class ServiceGame : Service<Game>
 
     public List<Round> GetRounds(int id)
     {
-        return GetIncludeRounds(id)?.Rounds;
+        return GetIncludeRounds(id).Rounds;
     }
 
     public int NbRounds(int id)
@@ -152,18 +152,18 @@ public class ServiceGame : Service<Game>
     public bool SoldierInGame(int id, int soldierId)
     {
         var game = GetIncludeSoldiers(id);
-        return game?.Soldiers?.Any(gs => gs.SoldierId == soldierId) ?? false;
+        return game.Soldiers?.Any(gs => gs.SoldierId == soldierId) ?? false;
     }
 
     public List<GameSoldier> GetGs(int id)
     {
-        return GetIncludeSoldiers(id)?.Soldiers!;
+        return GetIncludeSoldiers(id).Soldiers;
     }
 
     public List<GameSoldier> GetGs<T>(int id) where T : Soldier
     {
-        return GetIncludeSoldiers(id)?.Soldiers
-            .Where(gs => gs.Soldier.GetType() == typeof(T) || gs.Soldier.GetType().IsSubclassOf(typeof(T))).ToList()!;
+        return GetIncludeSoldiers(id).Soldiers
+            .Where(gs => gs.Soldier.GetType() == typeof(T) || gs.Soldier.GetType().IsSubclassOf(typeof(T))).ToList();
     }
 
     public List<Soldier> GetSoldiers(int id)
@@ -207,7 +207,7 @@ public class ServiceGame : Service<Game>
         return FilterValidSoldiers(GetGs<T>(id));
     }
 
-    public int NbValidSoldierWithType<T>(int id) where T : Soldier
+    public int NbValidSoldier<T>(int id) where T : Soldier
     {
         return GetValid<T>(id).Count;
     }
@@ -219,8 +219,6 @@ public class ServiceGame : Service<Game>
         var att = GetRandom<Soldier>(id);
 
         if (game == null || att == null || !SoldierInGame(id, att.Id)) return null;
-
-        var srv = new ServiceRound(_context);
 
         Soldier defender;
 
@@ -239,7 +237,7 @@ public class ServiceGame : Service<Game>
         if (defGs.Health < 0)
             defGs.Health = 0;
 
-        var round = srv.AddRound(att.Id, defender.Id, game);
+        var round = _rndSrv.AddRound(att.Id, defender.Id, game);
         round.HpLeft = defGs.Health;
         round.IsDead = defGs.Health <= 0;
 
@@ -329,7 +327,7 @@ public class ServiceGame : Service<Game>
 
     public bool EnoughSoldiers(int id)
     {
-        return NbValidSoldierWithType<Rebel>(id) > 0 && NbValidSoldierWithType<Empire>(id) > 0;
+        return NbValidSoldier<Rebel>(id) > 0 && NbValidSoldier<Empire>(id) > 0;
     }
 
     public string WinnerTeam(int id)

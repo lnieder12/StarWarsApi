@@ -1,6 +1,6 @@
 ﻿namespace StarWars.Model;
 
-public class Rebels_Empires
+public class RebelsEmpires
 {
     public List<Rebel> Rebels { get; set; }
 

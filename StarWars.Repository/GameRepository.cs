@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Repository;
 
 public class GameRepository : Repository<Game>
 {
@@ -10,7 +10,7 @@ public class GameRepository : Repository<Game>
     }
     public Game GetIncludeRounds(int id)
     {
-        return ctx.Set<Game>().Include(g => g.Rounds)
+        return Ctx.Set<Game>().Include(g => g.Rounds)
             .Include(g => g.Rounds).ThenInclude(r => r.Defender)
             .Include(g => g.Rounds).ThenInclude(r => r.Attacker)
             .FirstOrDefault(g => g.Id == id);
@@ -18,11 +18,11 @@ public class GameRepository : Repository<Game>
 
     public Game GetIncludeSoldiers(int id)
     {
-        return ctx.Set<Game>().Include(g => g.Soldiers).ThenInclude(gs => gs.Soldier).FirstOrDefault(g => g.Id == id);
+        return Ctx.Set<Game>().Include(g => g.Soldiers).ThenInclude(gs => gs.Soldier).FirstOrDefault(g => g.Id == id);
     }
     public new List<Game> GetAll()
     {
-        return ctx.Set<Game>().Include(g => g.Soldiers).ToList();
+        return Ctx.Set<Game>().Include(g => g.Soldiers).ToList();
     }
 
 }

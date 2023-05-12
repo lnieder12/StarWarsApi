@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Primitives;
 using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Repository;
 
 public class FilterPageRepository<T> : Repository<T> where T : class
 {
@@ -11,7 +11,7 @@ public class FilterPageRepository<T> : Repository<T> where T : class
 
     public virtual IQueryable<T> GetQueryFilteredSorted(int gameId, Dictionary<string, StringValues> queryParams)
     {
-        var db = ctx.Set<T>();
+        var db = Ctx.Set<T>();
 
         var query = db.AddFiltersSorted(queryParams);
 

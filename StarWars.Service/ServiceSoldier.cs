@@ -5,20 +5,19 @@ namespace StarWars.Service;
 
 public class ServiceSoldier : Service<Soldier>
 {
-    private readonly StarWarsDbContext _context;
+
+    private readonly ServiceRound _rndSrv;
 
     public ServiceSoldier(StarWarsDbContext context) : base(context)
     {
-        _context = context;
+        _rndSrv = new ServiceRound(context);
     }
 
     public override Soldier Patch(int id, JsonPatchDocument<Soldier> patch)
     {
-        var rndSrv = new ServiceRound(_context);
-
         var soldier = base.Patch(id, patch);
 
-        rndSrv.PatchRoundsDamage(soldier);
+        _rndSrv.PatchRoundsDamage(soldier);
 
         return soldier;
     }

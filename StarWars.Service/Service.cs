@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
-using StarWars.Controllers;
 using StarWars.Model;
+using StarWars.Repository;
 
 namespace StarWars.Service;
 
@@ -43,11 +43,5 @@ public class Service<T> where T : class
 
         return true;
     }
-
-    public virtual List<T> GetPage(int skip, int pageSize)
-    {
-        return Repo.Page(skip, pageSize);
-    }
-
 
 }

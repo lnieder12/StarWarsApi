@@ -1,21 +1,21 @@
-﻿using StarWars.Controllers;
-using StarWars.Model;
+﻿using StarWars.Model;
+using StarWars.Repository;
 
 namespace StarWars.Service;
 
 public class ServiceGameSoldier : Service<GameSoldier>
 {
 
-    private GameSoldierRepository gsRepo;
+    private readonly GameSoldierRepository _gsRepo;
 
     public ServiceGameSoldier(StarWarsDbContext context) : base(context)
     {
-        this.gsRepo = new GameSoldierRepository(context);
+        this._gsRepo = new GameSoldierRepository(context);
     }
 
     public GameSoldier Get(int gameId, int soldierId)
     {
-        return this.gsRepo.Get(gameId, soldierId);
+        return this._gsRepo.Get(gameId, soldierId);
     }
 
 

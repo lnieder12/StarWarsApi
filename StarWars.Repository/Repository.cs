@@ -1,54 +1,46 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Repository;
 
 public class Repository<T> where T : class
 {
-    protected StarWarsDbContext ctx;
+    protected StarWarsDbContext Ctx;
 
     public Repository(StarWarsDbContext ctx)
     {
-        this.ctx = ctx;
+        Ctx = ctx;
     }
 
     public T Add(T obj)
     {
-        ctx.Set<T>().Add(obj);
-        ctx.SaveChanges();
+        Ctx.Set<T>().Add(obj);
+        Ctx.SaveChanges();
 
         return obj;
     }
 
     public List<T> GetAll()
     {
-        return ctx.Set<T>().ToList();
+        return Ctx.Set<T>().ToList();
     }
 
     public virtual T Get(int id) 
     {
-        return ctx.Set<T>().Find(id);
+        return Ctx.Set<T>().Find(id);
     }
 
     public T Patch(T obj, JsonPatchDocument<T> patch)
     {
         patch.ApplyTo(obj);
-        ctx.SaveChanges();
+        Ctx.SaveChanges();
         return obj;
     }
 
     public void Delete(T obj)
     {
-        ctx.Set<T>().Remove(obj);
-        ctx.SaveChanges();
-    }
-
-    public virtual List<T> Page(int skip, int pageSize)
-    {
-        return ctx.Set<T>()
-            .Skip(skip)
-            .Take(pageSize)
-            .ToList();
+        Ctx.Set<T>().Remove(obj);
+        Ctx.SaveChanges();
     }
 
 }

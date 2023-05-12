@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using StarWars.Model;
 
-namespace StarWars.Controllers;
+namespace StarWars.Repository;
 
 public class GameSoldierRepository : FilterPageRepository<GameSoldier>
 {
@@ -12,13 +12,13 @@ public class GameSoldierRepository : FilterPageRepository<GameSoldier>
 
     public GameSoldier Get(int gameId, int soldierId)
     {
-        return ctx.Set<GameSoldier>()
+        return Ctx.Set<GameSoldier>()
             .FirstOrDefault(gs => gs.GameId == gameId && gs.SoldierId == soldierId);
     }
 
     public override IQueryable<GameSoldier> GetQueryFilteredSorted(int gameId, Dictionary<string, StringValues> queryParams)
     {
-        var gsDb = ctx.Set<GameSoldier>();
+        var gsDb = Ctx.Set<GameSoldier>();
         var query = gsDb
             .Include(gs => gs.Soldier)
             .Where(gs => gs.GameId == gameId);

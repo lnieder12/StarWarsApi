@@ -1,36 +1,33 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
-using StarWars.Controllers;
 using StarWars.Model;
+using StarWars.Repository;
 
 namespace StarWars.Service;
 
 public class ServiceRound : Service<Round>
 {
-    private StarWarsDbContext context;
 
-    private RoundRepository roundRepo;
+    private readonly RoundRepository _roundRepo;
 
-    private ServiceGameSoldier gsSrv;
+
+    private readonly ServiceSoldier _sldSrv;
 
     public ServiceRound(StarWarsDbContext context) : base(context)
     {
-        this.context = context;
-        this.roundRepo = new RoundRepository(context);
-        gsSrv = new ServiceGameSoldier(context);
+        _roundRepo = new RoundRepository(context);
+        _sldSrv = new ServiceSoldier(context);
     }
 
     public override List<Round> GetAll()
     {
-        return roundRepo.GetAll();
+        return _roundRepo.GetAll();
     }
 
     public Round AddRound(int idAtt, int idDef, Game game)
     {
-        var svSoldier = new Service<Soldier>(context);
+        var soldAtt = _sldSrv.Get(idAtt);
 
-        var soldAtt = svSoldier.Get(idAtt);
-
-        var soldDef = svSoldier.Get(idDef);
+        var soldDef = _sldSrv.Get(idDef);
 
         if(soldAtt == null || soldDef == null || soldAtt.GetType() == soldDef.GetType())
         {
@@ -56,20 +53,20 @@ public class ServiceRound : Service<Round>
 
     public Round GetInclude(int id)
     {
-        return roundRepo.GetInclude(id);
+        return _roundRepo.GetInclude(id);
     }
 
     public List<Round> GetPage(int lastId, int pageSize)
     {
-        return roundRepo.GetPage(lastId, pageSize);
+        return _roundRepo.GetPage(lastId, pageSize);
     }
 
     public void PatchRoundsDamage(Soldier attacker)
     {
-        foreach (var rnd in roundRepo.All())
+        foreach (var rnd in _roundRepo.All())
         {
             var patch = new JsonPatchDocument<Round>();
-            patch.Replace(rnd => rnd.Damage, attacker.Attack);
+            patch.Replace(round => round.Damage, attacker.Attack);
             Patch(rnd.Id, patch);
         }
     }
