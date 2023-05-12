@@ -24,6 +24,8 @@ public class ServiceRound : GamePageService<Round>
         return _roundRepo.GetAll();
     }
 
+
+
     public Round AddRound(int idAtt, int idDef, Game game)
     {
         var soldAtt = _sldSrv.Get(idAtt);
@@ -52,6 +54,11 @@ public class ServiceRound : GamePageService<Round>
         return round;
     }
 
+    public void PostAll(List<Round> rounds)
+    {
+        _roundRepo.PostAll(rounds);
+    }
+
     public Round GetInclude(int id)
     {
         return _roundRepo.GetInclude(id);
@@ -62,7 +69,7 @@ public class ServiceRound : GamePageService<Round>
         return _roundRepo.GetPage(lastId, pageSize);
     }
 
-    public List<Round> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
+    public new List<Round> GetPage(int gameId, Dictionary<string, StringValues> queryParams)
     {
         return _roundRepo.GetPage(gameId, queryParams);
     }

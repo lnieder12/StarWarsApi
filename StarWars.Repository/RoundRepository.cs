@@ -23,14 +23,17 @@ public class RoundRepository : GamePageRepository<Round>
         return All().ToList();
     }
 
+    public void PostAll(List<Round> rounds)
+    {
+        Ctx.Set<Round>().AddRange(rounds);
+        Ctx.SaveChanges();
+    }
+
     public IIncludableQueryable<Round, Soldier> All()
     {
         return Ctx.Rounds.Include(r => r.Attacker).Include(r => r.Defender);
     }
  
-
-
-
     public List<Round> GetPage(int lastId, int nbRow)
     {
         return All()

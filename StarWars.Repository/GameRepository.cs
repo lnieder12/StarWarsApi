@@ -10,16 +10,32 @@ public class GameRepository : Repository<Game>
     }
     public Game GetIncludeRounds(int id)
     {
-        return Ctx.Set<Game>().Include(g => g.Rounds)
+        return Ctx.Set<Game>()
             .Include(g => g.Rounds).ThenInclude(r => r.Defender)
             .Include(g => g.Rounds).ThenInclude(r => r.Attacker)
             .FirstOrDefault(g => g.Id == id);
+    }
+
+    public void SaveGame(Game game)
+    {
+        Ctx.Set<Game>().Update(game);
+        Ctx.SaveChanges();
     }
 
     public Game GetIncludeSoldiers(int id)
     {
         return Ctx.Set<Game>().Include(g => g.Soldiers).ThenInclude(gs => gs.Soldier).FirstOrDefault(g => g.Id == id);
     }
+
+    public Game GetIncludeAll(int id)
+    {
+        return Ctx.Set<Game>()
+            .Include(g => g.Rounds).ThenInclude(r => r.Defender)
+            .Include(g => g.Rounds).ThenInclude(r => r.Attacker)
+            .Include(g => g.Soldiers).ThenInclude(gs => gs.Soldier)
+            .FirstOrDefault(g => g.Id == id);
+    }
+
     public new List<Game> GetAll()
     {
         return Ctx.Set<Game>().Include(g => g.Soldiers).ToList();
