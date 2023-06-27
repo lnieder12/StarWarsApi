@@ -1,0 +1,45 @@
+﻿@using StarWars.Model
+@using JsonSerializer = System.Text.Json.JsonSerializer
+@using Newtonsoft.Json
+@page "/games/{id:int}"
+@inject IConfiguration config
+@inject IHttpClientFactory factory
+<h3>Game #@Game.Id</h3>
+
+<p>Soldiers: </p>
+<div style="height:500px;overflow-y:scroll">
+    @foreach (var gs in @Game.Soldiers)
+    {
+        <p>@gs.Health</p>
+    }
+</div>
+    
+<p>Rounds: @Game.Rounds.Count</p>
+<p>MaxRound: @Game.MaxRound</p>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Game? Game { get; set; }
+
+    bool _render;
+
+    protected override bool ShouldRender() => _render;
+
+    protected override void OnInitialized()
+    {
+        var url = config["SDK:url"] + "/game/" + Id;
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        var client = factory.CreateClient();
+        var response = client.Send(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            using var res = response.Content.ReadAsStringAsync();
+            var obj = JsonConvert.DeserializeObject<Game>(res.Result);
+            Game = obj;
+        }
+    }
+
+}

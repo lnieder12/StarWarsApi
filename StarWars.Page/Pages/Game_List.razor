@@ -1,0 +1,42 @@
+﻿@using StarWars.Model
+@using System.Text.Json
+@using Newtonsoft.Json
+@using NuGet.Protocol
+@page "/games"
+@inject IConfiguration config
+@inject IHttpClientFactory factory
+<h3>Games</h3>
+
+@{
+    System.Diagnostics.Debug.Assert(_games != null, nameof(_games) + " != null");
+}
+@foreach (var game in _games)
+{
+    <p>
+        <a href="/games/@game.Id">Game #@game.Id</a>
+    </p>
+}
+
+@code {
+    private List<Game> _games = new();
+    private Soldier[] soldiers = Array.Empty<Soldier>();
+
+    protected override void OnInitialized()
+    {
+        var url = config["SDK:url"] + "/game";
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        var client = factory.CreateClient();
+        var response = client.Send(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            using var res = response.Content.ReadAsStringAsync();
+            var obj = JsonConvert.DeserializeObject<List<Game>>(res.Result);
+            _games = obj;
+            // var obj = JsonConvert.DeserializeObject<Soldier[]>(res.Result);
+            // soldiers = obj;
+        }
+
+    }
+
+}
