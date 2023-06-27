@@ -3,14 +3,15 @@ using StarWars.Model;
 
 namespace StarWars.Service;
 
-public class ServiceSoldier : Service<Soldier>
+
+public class SoldierService : Service<Soldier>
 {
 
-    private readonly ServiceRound _rndSrv;
+    private readonly RoundService _rndSrv;
 
-    public ServiceSoldier(StarWarsDbContext context) : base(context)
+    public SoldierService(StarWarsDbContext context) : base(context)
     {
-        _rndSrv = new ServiceRound(context);
+        _rndSrv = new RoundService(context);
     }
 
     public override Soldier Patch(int id, JsonPatchDocument<Soldier> patch)

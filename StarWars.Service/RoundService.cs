@@ -5,7 +5,7 @@ using StarWars.Repository;
 
 namespace StarWars.Service;
 
-public class ServiceRound : GamePageService<Round>
+public class RoundService : GamePageService<Round>, IRoundService
 {
 
     private readonly RoundRepository _roundRepo;
@@ -13,7 +13,7 @@ public class ServiceRound : GamePageService<Round>
 
     private readonly Service<Soldier> _sldSrv;
 
-    public ServiceRound(StarWarsDbContext context) : base(context)
+    public RoundService(StarWarsDbContext context) : base(context)
     {
         _roundRepo = new RoundRepository(context);
         _sldSrv = new Service<Soldier>(context);

@@ -2,10 +2,10 @@
 
 namespace StarWars.Service;
 
-public class ServiceEmpire : Service<Empire>
+public class EmpireService : Service<Empire>, IEmpireService
 {
 
-    public ServiceEmpire(StarWarsDbContext context) : base(context)
+    public EmpireService(StarWarsDbContext context) : base(context)
     {
     }
 

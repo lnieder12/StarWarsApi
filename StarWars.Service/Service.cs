@@ -4,7 +4,7 @@ using StarWars.Repository;
 
 namespace StarWars.Service;
 
-public class Service<T> where T : class
+public class Service<T> : IService<T> where T : class
 {
     public Repository<T> Repo;
 

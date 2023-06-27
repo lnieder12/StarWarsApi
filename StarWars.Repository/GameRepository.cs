@@ -41,4 +41,11 @@ public class GameRepository : Repository<Game>
         return Ctx.Set<Game>().Include(g => g.Soldiers).ToList();
     }
 
+    public override Game Get(int id)
+    {
+        return Ctx.Set<Game>()
+            .Include(g => g.Soldiers)
+            .ThenInclude(gs => gs.Soldier)
+            .FirstOrDefault(g => g.Id == id)!;
+    }
 }

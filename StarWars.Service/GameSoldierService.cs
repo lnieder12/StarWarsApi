@@ -4,12 +4,12 @@ using StarWars.Repository;
 
 namespace StarWars.Service;
 
-public class ServiceGameSoldier : GamePageService<GameSoldier>
+public class GameSoldierService : GamePageService<GameSoldier>, IGameSoldierService
 {
 
     private readonly GameSoldierRepository _gsRepo;
 
-    public ServiceGameSoldier(StarWarsDbContext context) : base(context)
+    public GameSoldierService(StarWarsDbContext context) : base(context)
     {
         _gsRepo = new GameSoldierRepository(context);
     }

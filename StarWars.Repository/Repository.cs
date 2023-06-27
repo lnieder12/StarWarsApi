@@ -3,7 +3,7 @@ using StarWars.Model;
 
 namespace StarWars.Repository;
 
-public class Repository<T> where T : class
+public class Repository<T> : IRepository<T> where T : class
 {
     protected StarWarsDbContext Ctx;
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using StarWars.Model;
@@ -7,28 +6,28 @@ using StarWars.Repository;
 
 namespace StarWars.Service;
 
-public class ServiceGame : Service<Game>
+public class GameService : Service<Game>, IGameService
 {
-    private readonly ServiceEmpire _empSrv;
+    private readonly EmpireService _empSrv;
+
+    private readonly GameSoldierService _gsSrv;
 
     private readonly GameRepository _gameRepo;
 
-    private readonly ServiceGameSoldier _gsSrv;
+    private readonly RebelService _rebSrv;
 
-    private readonly ServiceRebel _rebSrv;
+    private readonly RoundService _rndSrv;
 
-    private readonly ServiceRound _rndSrv;
+    private readonly SoldierService _sldSrv;
 
-    private readonly ServiceSoldier _sldSrv;
-
-    public ServiceGame(StarWarsDbContext context) : base(context)
+    public GameService(StarWarsDbContext context) : base(context)
     {
         _gameRepo = new GameRepository(context);
-        _sldSrv = new ServiceSoldier(context);
-        _rndSrv = new ServiceRound(context);
-        _rebSrv = new ServiceRebel(context);
-        _empSrv = new ServiceEmpire(context);
-        _gsSrv = new ServiceGameSoldier(context);
+        _sldSrv = new SoldierService(context);
+        _rndSrv = new RoundService(context);
+        _rebSrv = new RebelService(context);
+        _empSrv = new EmpireService(context);
+        _gsSrv = new GameSoldierService(context);
     }
 
     public Game CreateGame(int rebels, int empires, int nbRounds)
@@ -64,11 +63,6 @@ public class ServiceGame : Service<Game>
         soldiers.Empires.ForEach(emp => AddSoldier(game.Id, emp.Id));
 
         return game;
-    }
-
-    public override List<Game> GetAll()
-    {
-        return _gameRepo.GetAll();
     }
 
     public Game GetIncludeAll(int id)
@@ -182,12 +176,12 @@ public class ServiceGame : Service<Game>
             .Cast<Empire>().ToList();
     }
 
-    private List<GameSoldier> FilterValidSoldiers(List<GameSoldier> soldiers)
+    public List<GameSoldier> FilterValidSoldiers(List<GameSoldier> soldiers)
     {
         return soldiers.FindAll(gs => gs.Health > 0);
     }
 
-    private GameSoldier GetRandom<T>(Game game) where T : Soldier
+    public GameSoldier GetRandom<T>(Game game) where T : Soldier
     {
         List<GameSoldier> soldiers = 
             GetValid<T>(game.Soldiers.IsNullOrEmpty() ? GetIncludeSoldiers(game.Id) : game);
@@ -197,7 +191,7 @@ public class ServiceGame : Service<Game>
         return soldiers[random.Next(soldiers.Count)];
     }
 
-    private List<GameSoldier> GetValid<T>(Game game) where T : Soldier
+    public List<GameSoldier> GetValid<T>(Game game) where T : Soldier
     {
         return FilterValidSoldiers(GetGs<T>(game));
     }
@@ -251,7 +245,7 @@ public class ServiceGame : Service<Game>
         return round;
     }
 
-    private SoldierScore GetSoldierScore(GameSoldier gs)
+    public SoldierScore GetSoldierScore(GameSoldier gs)
     {
         var score = new SoldierScore
         {

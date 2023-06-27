@@ -2,10 +2,10 @@
 
 namespace StarWars.Service;
 
-public class ServiceRebel : Service<Rebel>
+public class RebelService : Service<Rebel>, IRebelService
 {
 
-    public ServiceRebel(StarWarsDbContext context) : base(context)
+    public RebelService(StarWarsDbContext context) : base(context)
     {
     }
 
