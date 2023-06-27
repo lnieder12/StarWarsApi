@@ -1,6 +1,6 @@
 ﻿@using StarWars.Model
 @using Newtonsoft.Json
-@page "/games"
+@page "/game"
 @inject IConfiguration config
 @inject IHttpClientFactory factory
 <h3>Games</h3>
@@ -11,7 +11,7 @@
 @foreach (var game in _games)
 {
     <p>
-        <a href="/games/@game.Id">Game #@game.Id</a>
+        <a href="/game/@game.Id">Game #@game.Id</a>
     </p>
 }
 

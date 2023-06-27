@@ -1,32 +1,23 @@
 ﻿@using StarWars.Model
 @using Newtonsoft.Json
-@page "/game/{id:int}"
+@page "/soldier/{id:int}"
 @inject IConfiguration config
 @inject IHttpClientFactory factory
-<h3>Game #@Game.Id</h3>
+<h3>Soldier @Soldier.Name</h3>
 
-<p>Soldiers: </p>
-<div style="height:500px;overflow-y:scroll">
-    @foreach (var gs in @Game.Soldiers)
-    {
-        <p>
-            <a href="soldier/@gs.Soldier.Id">@gs.Soldier.Name</a>
-        </p>
-    }
-</div>
-    
-<p>Rounds: @Game.Rounds.Count</p>
-<p>MaxRound: @Game.MaxRound</p>
+<p>Attack : @Soldier.Attack</p>
+<p>Max health : @Soldier.MaxHealth</p>
+<p>Faction : @Soldier.SoldierType</p>
 
 @code {
     [Parameter]
     public int Id { get; set; }
+    private Soldier? Soldier { get; set; }
 
-    private Game? Game { get; set; }
 
     protected override void OnInitialized()
     {
-        var url = config["SDK:url"] + "/game/" + Id;
+        var url = config["SDK:url"] + "/soldier/" + Id;
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         var client = factory.CreateClient();
         var response = client.Send(request);
@@ -34,9 +25,8 @@
         if (response.IsSuccessStatusCode)
         {
             using var res = response.Content.ReadAsStringAsync();
-            var obj = JsonConvert.DeserializeObject<Game>(res.Result);
-            Game = obj;
+            var obj = JsonConvert.DeserializeObject<Soldier>(res.Result);
+            Soldier = obj;
         }
     }
-
 }
