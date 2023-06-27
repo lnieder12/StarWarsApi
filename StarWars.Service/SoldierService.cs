@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using StarWars.Model;
+using StarWars.Repository;
 
 namespace StarWars.Service;
 
@@ -7,11 +8,12 @@ namespace StarWars.Service;
 public class SoldierService : Service<Soldier>
 {
 
-    private readonly RoundService _rndSrv;
+    private readonly IRoundService _rndSrv;
 
-    public SoldierService(StarWarsDbContext context) : base(context)
+
+    public SoldierService(IRepository<Soldier> repo, IRoundService rndSrv) : base(repo)
     {
-        _rndSrv = new RoundService(context);
+        _rndSrv = rndSrv;
     }
 
     public override Soldier Patch(int id, JsonPatchDocument<Soldier> patch)

@@ -1,11 +1,11 @@
 ﻿using StarWars.Model;
+using StarWars.Repository;
 
 namespace StarWars.Service;
 
 public class RebelService : Service<Rebel>, IRebelService
 {
-
-    public RebelService(StarWarsDbContext context) : base(context)
+    public RebelService(IRepository<Rebel> repo) : base(repo)
     {
     }
 

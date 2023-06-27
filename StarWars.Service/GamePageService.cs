@@ -7,9 +7,11 @@ namespace StarWars.Service;
 public class GamePageService<T> : Service<T> where T : class
 {
     public GamePageRepository<T> PageRepo;
-    public GamePageService(StarWarsDbContext context) : base(context)
+
+
+    public GamePageService(IRepository<T> repo, GamePageRepository<T> pageRepo) : base(repo)
     {
-        PageRepo = new GamePageRepository<T>(context);
+        PageRepo = pageRepo;
     }
 
     public virtual List<T> GetPage(int gameId, Dictionary<string, StringValues> queryParams)

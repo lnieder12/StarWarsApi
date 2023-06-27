@@ -8,26 +8,27 @@ namespace StarWars.Service;
 
 public class GameService : Service<Game>, IGameService
 {
-    private readonly EmpireService _empSrv;
+    private readonly IEmpireService _empSrv;
 
-    private readonly GameSoldierService _gsSrv;
+    private readonly IGameSoldierService _gsSrv;
 
     private readonly GameRepository _gameRepo;
 
-    private readonly RebelService _rebSrv;
+    private readonly IRebelService _rebSrv;
 
-    private readonly RoundService _rndSrv;
+    private readonly IRoundService _rndSrv;
 
-    private readonly SoldierService _sldSrv;
+    private readonly IService<Soldier> _sldSrv;
 
-    public GameService(StarWarsDbContext context) : base(context)
+
+    public GameService(IRepository<Game> repo, IEmpireService empSrv, IGameSoldierService gsSrv, GameRepository gameRepo, IRebelService rebSrv, IRoundService rndSrv, IService<Soldier> sldSrv) : base(repo)
     {
-        _gameRepo = new GameRepository(context);
-        _sldSrv = new SoldierService(context);
-        _rndSrv = new RoundService(context);
-        _rebSrv = new RebelService(context);
-        _empSrv = new EmpireService(context);
-        _gsSrv = new GameSoldierService(context);
+        _empSrv = empSrv;
+        _gsSrv = gsSrv;
+        _gameRepo = gameRepo;
+        _rebSrv = rebSrv;
+        _rndSrv = rndSrv;
+        _sldSrv = sldSrv;
     }
 
     public Game CreateGame(int rebels, int empires, int nbRounds)

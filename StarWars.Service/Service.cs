@@ -6,12 +6,13 @@ namespace StarWars.Service;
 
 public class Service<T> : IService<T> where T : class
 {
-    public Repository<T> Repo;
+    public IRepository<T> Repo;
 
-    public Service(StarWarsDbContext context)
+    public Service(IRepository<T> repo)
     {
-        Repo = new Repository<T>(context);
+        Repo = repo;
     }
+
 
     public virtual T Add(T obj)
     {

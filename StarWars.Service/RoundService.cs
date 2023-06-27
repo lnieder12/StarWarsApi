@@ -11,12 +11,13 @@ public class RoundService : GamePageService<Round>, IRoundService
     private readonly RoundRepository _roundRepo;
 
 
-    private readonly Service<Soldier> _sldSrv;
+    private readonly IService<Soldier> _sldSrv;
 
-    public RoundService(StarWarsDbContext context) : base(context)
+
+    public RoundService(IRepository<Round> repo, GamePageRepository<Round> pageRepo, RoundRepository roundRepo, IService<Soldier> sldSrv) : base(repo, pageRepo)
     {
-        _roundRepo = new RoundRepository(context);
-        _sldSrv = new Service<Soldier>(context);
+        _roundRepo = roundRepo;
+        _sldSrv = sldSrv;
     }
 
     public override List<Round> GetAll()
