@@ -9,9 +9,10 @@ public class GameSoldierService : GamePageService<GameSoldier>, IGameSoldierServ
 
     private readonly GameSoldierRepository _gsRepo;
 
-    public GameSoldierService(StarWarsDbContext context) : base(context)
+
+    public GameSoldierService(IRepository<GameSoldier> repo, GamePageRepository<GameSoldier> pageRepo, GameSoldierRepository gsRepo) : base(repo, pageRepo)
     {
-        _gsRepo = new GameSoldierRepository(context);
+        _gsRepo = gsRepo;
     }
 
     public override List<GameSoldier> GetPage(int gameId, Dictionary<string, StringValues> queryParams)

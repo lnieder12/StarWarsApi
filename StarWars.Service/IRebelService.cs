@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using StarWars.Model;
+﻿using StarWars.Model;
 
 namespace StarWars.Service;
 

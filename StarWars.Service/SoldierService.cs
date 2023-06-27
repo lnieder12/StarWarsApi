@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using StarWars.Model;
 using StarWars.Repository;
+using StarWars.Service.Interfaces;
 
 namespace StarWars.Service;
 
-
-public class SoldierService : Service<Soldier>
+public class SoldierService : Service<Soldier>, ISoldierService
 {
 
     private readonly IRoundService _rndSrv;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using StarWars.Model;
 using StarWars.Repository;
+using StarWars.Service.Interfaces;
 
 namespace StarWars.Service;
 
@@ -12,16 +13,16 @@ public class GameService : Service<Game>, IGameService
 
     private readonly IGameSoldierService _gsSrv;
 
-    private readonly GameRepository _gameRepo;
+    private readonly IGameRepository _gameRepo;
 
     private readonly IRebelService _rebSrv;
 
     private readonly IRoundService _rndSrv;
 
-    private readonly IService<Soldier> _sldSrv;
+    private readonly ISoldierService _sldSrv;
 
 
-    public GameService(IRepository<Game> repo, IEmpireService empSrv, IGameSoldierService gsSrv, GameRepository gameRepo, IRebelService rebSrv, IRoundService rndSrv, IService<Soldier> sldSrv) : base(repo)
+    public GameService(IRepository<Game> repo, IEmpireService empSrv, IGameSoldierService gsSrv, IGameRepository gameRepo, IRebelService rebSrv, IRoundService rndSrv, ISoldierService sldSrv) : base(repo)
     {
         _empSrv = empSrv;
         _gsSrv = gsSrv;

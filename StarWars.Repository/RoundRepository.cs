@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Primitives;
 using StarWars.Model;
+using StarWars.Repository.Interfaces;
 
 namespace StarWars.Repository;
 
-public class RoundRepository : GamePageRepository<Round>
+public class RoundRepository : GamePageRepository<Round>, IRoundRepository
 {
     public RoundRepository(StarWarsDbContext ctx) : base(ctx)
     {

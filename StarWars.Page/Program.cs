@@ -1,4 +1,3 @@
-using System.Configuration;
 using StarWars.Page.Data;
 
 var builder = WebApplication.CreateBuilder(args);

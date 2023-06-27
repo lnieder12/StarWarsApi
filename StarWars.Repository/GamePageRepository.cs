@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Primitives;
 using StarWars.Model;
+using StarWars.Repository.Interfaces;
 
 namespace StarWars.Repository;
 
-public class GamePageRepository<T> : Repository<T> where T : class
+public class GamePageRepository<T> : Repository<T>, IGamePageRepository<T> where T : class
 {
     public GamePageRepository(StarWarsDbContext ctx) : base(ctx)
     {

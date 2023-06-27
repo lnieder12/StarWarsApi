@@ -3,7 +3,7 @@ using StarWars.Model;
 
 namespace StarWars.Repository;
 
-public class GameRepository : Repository<Game>
+public class GameRepository : Repository<Game>, IGameRepository
 {
     public GameRepository(StarWarsDbContext ctx) : base(ctx)
     {

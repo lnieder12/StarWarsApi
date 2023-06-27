@@ -2,19 +2,19 @@
 using Microsoft.Extensions.Primitives;
 using StarWars.Model;
 using StarWars.Repository;
+using StarWars.Repository.Interfaces;
 
 namespace StarWars.Service;
 
 public class RoundService : GamePageService<Round>, IRoundService
 {
 
-    private readonly RoundRepository _roundRepo;
-
+    private readonly IRoundRepository _roundRepo;
 
     private readonly IService<Soldier> _sldSrv;
 
 
-    public RoundService(IRepository<Round> repo, GamePageRepository<Round> pageRepo, RoundRepository roundRepo, IService<Soldier> sldSrv) : base(repo, pageRepo)
+    public RoundService(IRepository<Round> repo, GamePageRepository<Round> pageRepo, IRoundRepository roundRepo, IService<Soldier> sldSrv) : base(repo, pageRepo)
     {
         _roundRepo = roundRepo;
         _sldSrv = sldSrv;

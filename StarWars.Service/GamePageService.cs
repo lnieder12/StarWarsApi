@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Primitives;
-using StarWars.Model;
 using StarWars.Repository;
 
 namespace StarWars.Service;
