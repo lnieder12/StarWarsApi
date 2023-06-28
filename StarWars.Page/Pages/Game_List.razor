@@ -34,27 +34,14 @@ else
 @code {
     private List<Game>? _games = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        // var url = config["SDK:url"] + "/game";
-        // var request = new HttpRequestMessage(HttpMethod.Get, url);
-        // var client = factory.CreateClient();
-        // var response = client.Send(request);
-        //
-        // if (response.IsSuccessStatusCode)
-        // {
-        //     using var res = response.Content.ReadAsStringAsync();
-        //     var obj = JsonConvert.DeserializeObject<List<Game>>(res.Result);
-        //     _games = obj;
-        //     // var obj = JsonConvert.DeserializeObject<List<Soldier>>(res.Result);
-        //     // soldiers = obj;
-        // }
         GetAll();
     }
 
-    public async void GetAll()
+    public void GetAll()
     {
-        _games = await Service.GetAll();
+        _games = Service.GetAll().Result;
     }
 
 }

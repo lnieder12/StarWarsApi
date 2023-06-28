@@ -46,6 +46,7 @@ public class GameRepository : Repository<Game>, IGameRepository
         return Ctx.Set<Game>()
             .Include(g => g.Soldiers)
             .ThenInclude(gs => gs.Soldier)
+            .Include(g => g.Rounds)
             .FirstOrDefault(g => g.Id == id)!;
     }
 }

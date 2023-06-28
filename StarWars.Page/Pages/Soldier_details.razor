@@ -18,7 +18,8 @@
 
     protected override void OnInitialized()
     {
-        var url = config["SDK:url"] + "/soldier/" + Id;
+        // Méthode proposée par Microsoft pour Blazor Server
+        var url = $"{config["SDK:url"]}/soldier/{Id}";
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         var client = factory.CreateClient();
         var response = client.Send(request);
