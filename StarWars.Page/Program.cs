@@ -1,4 +1,5 @@
 using StarWars.Page.Data;
+using WASM.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddTransient<GameService>();
 
 var app = builder.Build();
 

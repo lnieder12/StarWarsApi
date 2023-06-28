@@ -23,4 +23,13 @@
     <ProjectReference Include="..\StarWars\StarWars.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="RCL">
+      <HintPath>..\..\RCL\bin\Debug\net7.0\RCL.dll</HintPath>
+    </Reference>
+    <Reference Include="WASM">
+      <HintPath>..\..\WASM\bin\Debug\net7.0\WASM.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -1,41 +1,60 @@
 ﻿@using StarWars.Model
-@using Newtonsoft.Json
+@using RCL
+@using WASM.Services
+@inject GameService Service
 @page "/game"
-@inject IConfiguration config
-@inject IHttpClientFactory factory
 <h3>Games</h3>
 
-@{
-    System.Diagnostics.Debug.Assert(_games != null, nameof(_games) + " != null");
-}
+
 <PageTitle>Games</PageTitle>
-@foreach (var game in _games)
+
+
+@if (_games is not null && _games.Count > 0)
 {
-    <p>
-        <a href="/game/@game.Id">Game #@game.Id</a>
-    </p>
+    <TableTemplate Items="_games" Context="game">
+        <TableHeader>
+            <th>Id</th>
+            <th>Soldiers</th>
+            <th>Rounds</th>
+            <th>MaxRound</th>
+        </TableHeader>
+        <RowTemplate>
+            <td><a href="/game/@game.Id">@game.Id</a></td>
+            <td>@game.Soldiers.Count</td>
+            <td>@game.Rounds.Count</td>
+            <td>@game.MaxRound</td>
+        </RowTemplate>
+    </TableTemplate>
+}
+else
+{
+    <p><em>Loading...</em></p>
 }
 
 @code {
     private List<Game>? _games = new();
-    private List<Soldier>? _soldiers = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var url = config["SDK:url"] + "/game";
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var client = factory.CreateClient();
-        var response = client.Send(request);
+        // var url = config["SDK:url"] + "/game";
+        // var request = new HttpRequestMessage(HttpMethod.Get, url);
+        // var client = factory.CreateClient();
+        // var response = client.Send(request);
+        //
+        // if (response.IsSuccessStatusCode)
+        // {
+        //     using var res = response.Content.ReadAsStringAsync();
+        //     var obj = JsonConvert.DeserializeObject<List<Game>>(res.Result);
+        //     _games = obj;
+        //     // var obj = JsonConvert.DeserializeObject<List<Soldier>>(res.Result);
+        //     // soldiers = obj;
+        // }
+        GetAll();
+    }
 
-        if (response.IsSuccessStatusCode)
-        {
-            using var res = response.Content.ReadAsStringAsync();
-            var obj = JsonConvert.DeserializeObject<List<Game>>(res.Result);
-            _games = obj;
-            // var obj = JsonConvert.DeserializeObject<List<Soldier>>(res.Result);
-            // soldiers = obj;
-        }
-
+    public async void GetAll()
+    {
+        _games = await Service.GetAll();
     }
 
 }
